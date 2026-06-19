@@ -1,0 +1,41 @@
+###############################################################################
+# Dockerfile.clean-runner
+#
+# Simulates a clean, isolated remote execution worker (like an EngFlow or
+# BuildFarm worker node) where ONLY build toolchains are installed — no
+# extra system libraries.
+#
+# CRITICAL: zlib1g-dev is intentionally NOT installed here. This means
+# <zlib.h> is unavailable and any build that depends on the system zlib
+# will fail, exposing non-hermetic dependency issues.
+###############################################################################
+
+FROM ubuntu:22.04
+
+# Prevent interactive prompts during apt-get
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# Install minimal build toolchain — no zlib!
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        git \
+        g++ \
+        make \
+        clang \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Bazelisk as the Bazel launcher.
+# Bazelisk auto-downloads the correct Bazel version based on .bazelversion
+# or the USE_BAZEL_VERSION env var.
+ARG BAZELISK_VERSION=v1.25.0
+RUN curl -fSL "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-linux-amd64" \
+        -o /usr/local/bin/bazel && \
+    chmod +x /usr/local/bin/bazel
+
+# Verify Bazelisk is installed
+RUN bazel --version || true
+
+WORKDIR /app

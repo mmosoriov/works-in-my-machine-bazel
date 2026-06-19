@@ -1,0 +1,27 @@
+###############################################################################
+# docker-compose.yml — Local HTTP/gRPC remote cache
+#
+# Runs buchgr/bazel-remote, providing an HTTP (port 8080) and gRPC (port 9092)
+# remote cache that Bazel can push to and pull from, simulating a production
+# remote caching setup (like EngFlow, BuildBuddy, or a self-hosted cache).
+###############################################################################
+
+services:
+  bazel-remote-cache:
+    image: buchgr/bazel-remote:latest
+    container_name: bazel-remote-cache
+    ports:
+      - "8080:8080"   # HTTP cache endpoint
+      - "9092:9092"   # gRPC cache endpoint
+    volumes:
+      - cache-data:/data
+    command:
+      - "--max_size=2"          # 2 GB maximum cache size
+      - "--dir=/data"           # Persist cache artifacts to the volume
+      - "--http_address=0.0.0.0:8080"
+      - "--grpc_address=0.0.0.0:9092"
+    restart: unless-stopped
+
+volumes:
+  cache-data:
+    driver: local

@@ -1,0 +1,9 @@
+# Bazel convenience symlinks
+/bazel-*
+
+# Bazel execution profiles & logs
+*.json.gz
+*.log
+
+# Bzlmod lockfile (optional: uncomment if you want to commit lockfiles)
+# MODULE.bazel.lock
