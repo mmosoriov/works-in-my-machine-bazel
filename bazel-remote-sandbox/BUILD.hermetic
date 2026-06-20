@@ -1,16 +1,6 @@
 ###############################################################################
-# BUILD.hermetic — Top-level build targets with hermetic zlib
-#
 # STAGE: "Apply Fix"
 #
-# This BUILD file links the hello-engflow binary against the hermetically-
-# fetched @zlib target from the Bazel Central Registry, instead of the
-# system's -lz shared library.
-#
-# To apply this fix:
-#   cp MODULE.bazel.hermetic MODULE.bazel
-#   cp BUILD.hermetic BUILD
-#   bazel build //...
 ###############################################################################
 
 load("@rules_cc//cc:defs.bzl", "cc_binary")

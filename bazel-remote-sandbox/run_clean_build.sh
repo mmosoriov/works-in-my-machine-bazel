@@ -21,10 +21,18 @@ cd "$SCRIPT_DIR"
 IMAGE_NAME="clean-runner"
 DOCKERFILE="Dockerfile.clean-runner"
 
+# Get host architecture
+ARCH=$(uname -m)
+if [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then
+    TARGET_ARCH="arm64"
+else
+    TARGET_ARCH="amd64"
+fi
+
 echo "═══════════════════════════════════════════════════════════════════════"
 echo "  🐳  Building clean-runner Docker image (no zlib installed)..."
 echo "═══════════════════════════════════════════════════════════════════════"
-docker build -t "$IMAGE_NAME" -f "$DOCKERFILE" .
+docker build --build-arg TARGETARCH="$TARGET_ARCH" -t "$IMAGE_NAME" -f "$DOCKERFILE" .
 
 echo ""
 echo "═══════════════════════════════════════════════════════════════════════"

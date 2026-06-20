@@ -1,50 +1,7 @@
-# 🏗️ Bazel Remote Sandbox — Non-Hermetic Dependency Simulation
+# 🏗️ Bazel "It works on my machine!" Simulation
 
-> **"It works on my machine!"** — Every developer, at some point.
 
 This project is a self-contained sandbox that **reproduces and then fixes** a classic Bazel build infrastructure issue: a **non-hermetic system library dependency** that compiles on a developer's laptop but fails on a clean remote execution worker.
-
----
-
-## 📋 Project Goal
-
-Demonstrate how a C++ binary that depends on `<zlib.h>` (a system-installed header) will:
-
-1. **✅ Build successfully** on a developer's machine where `zlib` is already installed.
-2. **❌ Fail to build** on a clean remote worker (simulated in Docker) that lacks `zlib` headers.
-3. **✅ Build everywhere** once the dependency is migrated to a **hermetic** Bazel-managed `zlib` fetched from source.
-
-This is a common pattern encountered when onboarding teams to remote build execution services like [EngFlow](https://www.engflow.com/)
-
----
-
-## 🏛️ Architecture
-
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                        Developer Laptop                         │
-│                                                                  │
-│  ┌─────────────────┐    ┌──────────────────────────────────┐    │
-│  │  Bazel Workspace │    │  Docker: bazel-remote-cache      │    │
-│  │  (this repo)     │───▶│  buchgr/bazel-remote:latest      │    │
-│  │                  │    │  HTTP :8080  │  gRPC :9092       │    │
-│  └─────────────────┘    └──────────────────────────────────┘    │
-│           │                                                      │
-│           ▼                                                      │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │  Docker: clean-runner (Ubuntu 22.04)                     │    │
-│  │  • g++, clang, make, curl, git                           │    │
-│  │  • Bazelisk → auto-downloads Bazel                       │    │
-│  │  • ❌ NO zlib1g-dev (simulates clean worker)             │    │
-│  └─────────────────────────────────────────────────────────┘    │
-└──────────────────────────────────────────────────────────────────┘
-```
-
-| Component | Purpose |
-|-----------|---------|
-| **Bazel Workspace** | Monorepo with a C++ binary that uses zlib |
-| **bazel-remote-cache** | Local HTTP/gRPC remote cache (Docker) |
-| **clean-runner** | Simulates a sterile remote execution worker (Docker) |
 
 ---
 
@@ -56,17 +13,12 @@ The `hello-engflow` C++ binary includes `<zlib.h>` and links against `-lz`:
 #include <zlib.h>  // ← System header — non-hermetic!
 ```
 
-On the developer's laptop, `zlib` is typically available via:
-- **macOS:** `brew install zlib` or Xcode SDK
-- **Ubuntu:** `apt-get install zlib1g-dev`
-
-But on a **clean remote worker** (or CI container), these headers don't exist. The build fails:
+On the developer's laptop, `zlib` is typically available. But on a **clean remote worker** , these headers don't exist. The build fails:
 
 ```
-src/main.cpp:21:10: fatal error: zlib.h: No such file or directory
-   21 | #include <zlib.h>
+src/main.cpp:12:10: fatal error: zlib.h: No such file or directory
+   12 | #include <zlib.h>
       |          ^~~~~~~~
-compilation terminated.
 ```
 
 ---

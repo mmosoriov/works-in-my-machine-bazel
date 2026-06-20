@@ -4,10 +4,6 @@
 # Simulates a clean, isolated remote execution worker (like an EngFlow or
 # BuildFarm worker node) where ONLY build toolchains are installed — no
 # extra system libraries.
-#
-# CRITICAL: zlib1g-dev is intentionally NOT installed here. This means
-# <zlib.h> is unavailable and any build that depends on the system zlib
-# will fail, exposing non-hermetic dependency issues.
 ###############################################################################
 
 FROM ubuntu:22.04
@@ -30,8 +26,11 @@ RUN apt-get update && \
 # Install Bazelisk as the Bazel launcher.
 # Bazelisk auto-downloads the correct Bazel version based on .bazelversion
 # or the USE_BAZEL_VERSION env var.
+# Dynamically select architecture (amd64 vs arm64) based on Docker platform target.
+ARG TARGETARCH
 ARG BAZELISK_VERSION=v1.25.0
-RUN curl -fSL "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-linux-amd64" \
+RUN if [ "$TARGETARCH" = "arm64" ]; then ARCH="arm64"; else ARCH="amd64"; fi && \
+    curl -fSL "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-linux-${ARCH}" \
         -o /usr/local/bin/bazel && \
     chmod +x /usr/local/bin/bazel
 

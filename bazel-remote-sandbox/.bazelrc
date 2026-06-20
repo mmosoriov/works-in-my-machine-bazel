@@ -2,11 +2,9 @@
 # .bazelrc — Bazel configuration for bazel_remote_sandbox
 ###############################################################################
 
-# ── Common settings ──────────────────────────────────────────────────────────
 common --color=yes
 common --show_progress_rate_limit=1
 
-# ── Build profiling ─────────────────────────────────────────────────────────
 # Generates a JSON execution profile that can be loaded in Chrome's
 # chrome://tracing or https://ui.perfetto.dev to visualize a Gantt chart
 # of the build's critical path and action execution timeline.

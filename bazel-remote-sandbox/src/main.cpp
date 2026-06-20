@@ -1,10 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // main.cpp — Compresses a string using zlib library
 //
-// On a developer's laptop, the header is found and the build succeeds.
-// On a clean remote execution worker that lacks zlib headers, the compiler will
-// emit:
-//     fatal error: zlib.h: No such file or directory
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <cstdio>
@@ -19,9 +15,6 @@ int main() {
   std::printf("Hello, EngFlow! Starting build performance check...\n\n");
 
   // Compress a test string to prove that the zlib linkage works.
-  // We use a longer string with repeated patterns so DEFLATE can find
-  // redundancy and achieve meaningful compression (short unique strings
-  // are larger after compression due to zlib's ~11-byte header overhead).
   const char *original =
       "EngFlow accelerates builds by 10x or more! "
       "EngFlow accelerates builds by 10x or more! "

@@ -3,7 +3,7 @@
 #
 # Runs buchgr/bazel-remote, providing an HTTP (port 8080) and gRPC (port 9092)
 # remote cache that Bazel can push to and pull from, simulating a production
-# remote caching setup (like EngFlow, BuildBuddy, or a self-hosted cache).
+# remote caching setup (like EngFlow).
 ###############################################################################
 
 services:
