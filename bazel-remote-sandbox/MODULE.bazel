@@ -1,21 +1,5 @@
 ###############################################################################
 # MODULE.bazel — Bzlmod configuration for bazel_remote_sandbox
-#
-# STAGE: "Reproduce Failure"
-#
-# This configuration intentionally does NOT declare a hermetic zlib dependency.
-# The C++ binary (//hello-engflow) includes <zlib.h> and links against -lz,
-# which means:
-#   • On the developer's laptop (where zlib1g-dev is installed), the build
-#     compiles and links successfully against the system copy of zlib.
-#   • On a clean remote execution worker (or our Dockerized clean-runner),
-#     there is no system zlib, so the compiler will fail with:
-#         fatal error: zlib.h: No such file or directory
-#
-# This is the canonical "works on my machine" non-hermetic dependency bug.
-#
-# To fix the build, swap this file with MODULE.bazel.hermetic, which pulls
-# zlib in as a hermetic third-party dependency via http_archive.
 ###############################################################################
 
 module(
@@ -27,11 +11,7 @@ module(
 bazel_dep(name = "rules_cc", version = "0.0.9")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# HERMETIC ZLIB — commented out for the "reproduce failure" stage.
-#
-# Uncomment the lines below (or copy MODULE.bazel.hermetic over this file)
-# to pull zlib from source and compile it hermetically, removing the
-# dependency on the host system's zlib headers and shared library.
-#
-# bazel_dep(name = "zlib", version = "1.3.1.bcr.3")
+# HERMETIC ZLIB — fetched and compiled from source via the BCR. (Bazel central registry)
+# Registry entry: https://registry.bazel.build/modules/zlib
 # ─────────────────────────────────────────────────────────────────────────────
+bazel_dep(name = "zlib", version = "1.3.2")

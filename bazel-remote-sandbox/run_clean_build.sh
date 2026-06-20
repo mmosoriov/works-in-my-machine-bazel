@@ -5,12 +5,6 @@
 # Builds and runs the hello-engflow target inside a clean Docker container
 # that lacks system zlib headers, simulating a remote execution worker.
 #
-# Expected outcome (before applying the hermetic fix):
-#   The build FAILS with:
-#       fatal error: zlib.h: No such file or directory
-#
-# After swapping in MODULE.bazel.hermetic and BUILD.hermetic:
-#   The build SUCCEEDS because zlib is fetched and compiled from source.
 ###############################################################################
 
 set -euo pipefail
@@ -41,10 +35,7 @@ echo "════════════════════════�
 echo ""
 
 # Mount the project directory into the container's /app working directory.
-# --network=host allows the container to reach the local remote cache
-# if docker-compose is also running.
 docker run --rm \
-    --network=host \
     -v "$(pwd)":/app \
     -w /app \
     "$IMAGE_NAME" \

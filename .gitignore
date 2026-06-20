@@ -5,5 +5,4 @@
 *.json.gz
 *.log
 
-# Bzlmod lockfile (optional: uncomment if you want to commit lockfiles)
-# MODULE.bazel.lock
+MODULE.bazel.lock
